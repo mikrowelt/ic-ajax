@@ -119,6 +119,39 @@ test('throws if success or error callbacks are used', function() {
   });
 });
 
+asyncTest('dinamic fixture response', function() {
+
+  expect(2);
+
+  ic.ajax.defineFixture('/foo', function(requestData) {
+    return {
+      response: {foo: requestData.bar},
+      textStatus: 'success',
+      jqXHR: { getResponseHeader: function(a) { return a; } }
+    }
+  });
+
+  ic.ajax.request({
+    url: '/foo',
+    data: {bar: true}  
+  }).then(function(result) {
+      start();
+      equal(result.bar, true);
+      stop();
+    }
+  )
+
+  ic.ajax.request({
+    url: '/foo',
+    data: {bar: false}  
+  }).then(function(result) {
+      start();
+      equal(result.bar, false);
+      stop();
+    }
+  )
+});
+
 if (parseFloat(Ember.VERSION) >= 1.3) {
   function promiseLabelOf(promise) {
     return promise._label;

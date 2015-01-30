@@ -93,10 +93,50 @@ ic.ajax.defineFixture('api/v1/courses', {
 ic.ajax.request('api/v1/courses').then(function(result) {
   deepEqual(result, ic.ajax.lookupFixture('api/v1/courses').response);
 });
+
 ```
 
 To test failure paths, set the `textStatus` to anything but `success`.
 
+You can also pass dinamic structures as a fixture to `defineFixture` method.
+
+Example:
+
+```js
+ic.ajax.defineFixture('api/v1/courses', function(settings) {
+  var response;
+  // Check if 'count' flag is set
+  if (settings.data && settings.data.count) {
+    response = {count: 1};
+  } else {
+    response = [{name: 'basket weaving'}];
+  }
+  return {
+    response: response,
+    jqXHR: {},
+    textStatus: 'success'
+  };
+});
+
+//Send request with 'count' flag
+ic.ajax.request({
+  url: 'api/v1/courses',
+  data: {count: true},
+  type: 'POST'
+}).then(function(result) {
+  deepEqual(result, {count: 1});
+});
+
+//Send request without 'count' flag
+ic.ajax.request({
+  url: 'api/v1/courses',
+  type: 'POST'
+}).then(function(result) {
+  deepEqual(result, [{name: 'basket weaving'}]);
+});
+
+
+```
 
 Contributing
 ------------
