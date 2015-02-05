@@ -122,7 +122,7 @@ test('throws if success or error callbacks are used', function() {
 asyncTest('dinamic fixture response', function() {
 
   expect(2);
-
+  stop();
   ic.ajax.defineFixture('/foo', function(requestData) {
     return {
       response: {foo: requestData.bar},
